@@ -11,23 +11,20 @@ Declaración de los fotosensores:
 ---
 Variables importantes:
 
-    using namespace std::chrono;
+    const double distancia = 0.14;
     Timer t;
-    const int distancia = 1;
-    const double precision = 0.4;
 
-* Se usara la libreria Timer para medir el tiempo.
 * La variable distancia, almacena la distancia que hay entre ambas compuertas
-* La variable precision, determina desde que valor se hara la comparación por la luz recibida por el fotosensor, entre más alto sea, más facil determinara si paso algun objeto por la compuerta. (0 <= precision <= 1)
+* Se usara la libreria Timer para medir el tiempo.
 
 ---
 Metodo para calcular la precision del sensor:
 
     bool sensor(AnalogIn fotoSensor) {
-        return fotoSensor.read()>precision;
+        return fotoSensor.read()==1;
     }
 
-Este metodo, devolvera true mientras que el fotosensor reciba una cantidad de luz medida, mayor que lo que contenga la variable precisión, falso en caso contrario
+Este metodo, devolvera true mientras el sensor reciba su maximo de luz.
 
 ---
     while (sensor(ain)) {};
@@ -41,16 +38,14 @@ Tiempo:
 Se inicia el contador:
 
     t.start();
-    printf("Inicia contador \n");
 
 Se detiene el contador:
 
     t.stop();
-    printf("Fin contador \n");
 
 Obtención del tiempo transcurrido:
 
-    tiempo = duration_cast<milliseconds>(t.elapsed_time()).count();
+    long long tiempo = duration_cast<milliseconds>(t.elapsed_time()).count();
 
 Se recetea el contador:
 
@@ -60,3 +55,20 @@ Se recetea el contador:
 Calcular la aceleración:
 
     aceleracion = 2*distancia/pow(tiempo, 2);
+
+---
+Mostrar aceleracion por el lcd:
+
+    void escribirLCD(double a) {
+        display.cls();
+        display.locate(0, 0);
+        display.printf("aceleracion: ");
+        display.locate(0, 1);
+        display.printf("%f", a);
+    }
+
+Ya que el lcd cuenta con un maximo de caracteres, se coloca el mensaje de aceleracion en la parte de arriba y su valor en la parte de abajo.
+
+---
+### NOTA:
+Consideramos que no hace falta un teclado matricial, ya que el programa se ejecuta automaticamente y para volver a medir la aceleración basta con volver a soltar el objeto
